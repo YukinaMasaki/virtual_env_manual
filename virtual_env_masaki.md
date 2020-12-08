@@ -24,13 +24,13 @@ $ virtualbox
 #### Vagrantのインストール
 ```
 $ brew cask install vagrant
-$ vagrant -v  (バージョン確認)
+$ vagrant -v  // バージョン確認
 ```
 #### vagrant boxのダウンロード
 LinuxのCentOSのバージョン7のbox名 centos/7 を指定して実行  
 ```
 $ vagrant box add centos/7  
-→ Enter your choice: 3 【選択肢が表示されるので、virtualbox　を選択】 
+→ Enter your choice: 3  // 選択肢が表示されるので、virtualbox　を選択
 ```
 下記の表示が出たら成功
 ``` 
@@ -39,9 +39,9 @@ Successfully added box 'centos/7' (v1902.01) for 'virtualbox'!
 #### Vagrantの作業ディレクトリを用意する
 自分の作業用ディレクトリ下にvagrant_test という名前でディレクトリを作成  
 ```
-$ mkdir vagrant_test  (ディレクトリ作成)  
-$ cd vagrant_test  (作成したディレクトリに移動)  
-$ vagrant init centos/7  (vagrant boxを使用する)  
+$ mkdir vagrant_test  // ディレクトリ作成  
+$ cd vagrant_test  // 作成したディレクトリに移動  
+$ vagrant init centos/7  // vagrant boxを使用する  
 ```
 【実行後下記のようになればOK】  
 ```
@@ -80,9 +80,7 @@ $ vagrant up
 エラーなど状況確認は`vagrant status`コマンド
 #### ゲストOSへのログイン
 ```
-$ vagrant ssh  
-
-[vagrant@localhost ~]$の表示だと成功
+$ vagrant ssh  // [vagrant@localhost ~]$の表示だと成功
 ```
 ### 仮想環境構築〜開発に必要なソフトウェアなどをインストール〜
 ___
@@ -105,19 +103,20 @@ $ php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
 $ php composer-setup.php
 $ php -r "unlink('composer-setup.php');"
 
-*どのディレクトリにいてもcomposerコマンドを使用を使用できるようfileの移動を行います  
+// どのディレクトリにいてもcomposerコマンドを使用を使用できるようfileの移動を行います  
 $ sudo mv composer.phar /usr/local/bin/composer
 $ composer -v
 ```
 #### Laravelのインストール (Laravel Ver6.０以上)
 現在ゲストOSにログインしている人は一旦`exit`コマンドを実行してログアウト  
 ```
-$ cd vagrant_test　【vagrant_testディレクトリ下にインストール】  
+$ cd vagrant_test  // vagrant_testディレクトリ下にインストール  
 $ composer create-project laravel/laravel --prefer-dist laravel_app 6.0
-$ php artisan -v (Laravel Ver6.2 で大丈夫) 
+$ php artisan -v  // Laravel Ver6.2 で大丈夫
 
-$ php artisan serve 【ブラウザでの確認　http://127.0.0.1:8000】  
+$ php artisan serve   
 ```
+【ブラウザでの確認　http://127.0.0.1:8000】
 #### Nginxのインストール  
 `$ sudo vi /etc/yum.repos.d/nginx.repo`
 
@@ -138,7 +137,7 @@ $ nginx -v
 ```
 $ sudo systemctl start firewalld.service
 $ sudo firewall-cmd --add-service=http --zone=public --permanent
-$ sudo firewall-cmd --reload  【新たに追加を行ったのでそれをファイヤーウォールに反映させるコマンドも合わせて実行】  
+$ sudo firewall-cmd --reload  // 新たに追加を行ったのでそれをファイヤーウォールに反映させるコマンドも合わせて実行 
 ```
 #### Nginx起動
 ```
@@ -165,7 +164,7 @@ SELINUX=disabled
 ```
 $ exit 
 $ vagrant reload  
-$ vagrant ssh  (リロードが完了したら再度ゲストOSにログイン)  
+$ vagrant ssh  // リロードが完了したら再度ゲストOSにログイン  
 $ sudo systemctl start nginx
 ```
 【ブラウザ確認　http://192.168.33.19】
@@ -174,8 +173,8 @@ $ sudo systemctl start nginx
 $ sudo wget http://dev.mysql.com/get/mysql57-community-release-el7-7.noarch.rpm  
 $ sudo rpm -Uvh mysql57-community-release-el7-7.noarch.rpm  
 $ sudo yum install -y mysql-community-server  
-$ mysql --version  【versionの確認ができたら、インストール完了】  
-$ sudo systemctl start mysqld  【Mysql起動】 
+$ mysql --version  // versionの確認ができたら、インストール完了  
+$ sudo systemctl start mysqld  // Mysql起動 
 ```
 MySQLの設定ファイルを変更 (シンプルなパスワードに初期設定できるように)
 ```
@@ -190,7 +189,7 @@ passwordを調べ、接続しpassswordの再設定を行う
 $ sudo cat /var/log/mysqld.log | grep 'temporary password' 
 →　2017-01-01T00:00:00.000000Z 1 [Note] A temporary password is generated for root@localhost: パスワード  
 $ mysql -u root -p  
-→先ほど確認したパスワード入力  
+// 先ほど確認したパスワード入力  
 $ mysql > set password = "新たなpassword"; (パスワード設定) 
 ```  
 
@@ -216,7 +215,7 @@ $ php artisan migrate
 $ php artisan make:migration create_todos_table --create=todos  
 ```
 database/migrations/に yyyy_mm_dd_xxxxxx_create_todos_table.phpファイルがあるので編集　
-```
+```blade
 public function up()  
  {  
     　Schema::create('todos', function (Blueprint $table) {  
@@ -235,8 +234,8 @@ DBに初期データの投入
 $ php artisan make:seeder TodosTableSeeder  
 ```
 database/seeds/TodosTableSeeder を編集  
-```
-?php  
+```blade
+<?php  
 use Illuminate\Database\Seeder;  
 use Carbon\Carbon; // 追記  
 
@@ -264,7 +263,7 @@ class TodosTableSeeder extends Seeder
 }
 ```
 database/seeds/DatabaseSeeder.php を編集   
-```
+```blade
  public function run()  
     　{  
        　　 // $this->call(UsersTableSeeder::class);  
@@ -275,7 +274,7 @@ DBに反映させる
 ```
 $ php artisan db:seed  
 
-→ Seeding: TodosTableSeeder 【表示されたら反映してる】  
+→ Seeding: TodosTableSeeder  // 表示されたら反映してる  
 ```
 
 ### Laravel 〜Application作成〜 
@@ -284,7 +283,7 @@ ___
 `$ php artisan make:controller TodoController --resource`  
 ##### ルーティング機能
 route/web.php 編集  
-```
+```blade
 Route::get('/', function () {  
     　return view('welcome');  
 });  
@@ -299,7 +298,7 @@ $ mkdir resources/views/layouts resources/views/todo
 - 各ページのfileが格納されるディレクトリ  
 
 `$ touch resources/views/layouts/app.blade.php` ファイル作成後、編集  
-```
+```blade
 <!DOCTYPE html>  
 <html lang="ja">  
 <head>  
@@ -324,7 +323,7 @@ $ mkdir resources/views/layouts resources/views/todo
 ```
 #### Viewの分割
 `touch resources/views/todo/index.blade.php` ファイル作成後、編集 
-```
+```blade
 @extends ('layouts.app')   
 @section ('content')   
 
@@ -366,7 +365,7 @@ $ mkdir resources/views/layouts resources/views/todo
 `composer require laravelcollective/html:6.2.0` 
 
 `vi config/app.php`  
-```
+```blade
 'providers' => [  
     　// ...  
     　Collective\Html\HtmlServiceProvider::class, // 追記  
@@ -382,7 +381,7 @@ $ mkdir resources/views/layouts resources/views/todo
 `touch resources/views/todo/create.blade.php resources/views/todo/edit.blade.php` 
 
 `create.blade.php` を編集
-```
+```blade
 @extends ('layouts.app')  
 @section ('content')   
 
@@ -397,7 +396,7 @@ $ mkdir resources/views/layouts resources/views/todo
 @endsection
 ```
 `edit.blade.php` を編集
-```
+```blade
 @extends ('layouts.app')  
 @section ('content')  
 
@@ -417,7 +416,7 @@ DBへの操作が行えるように Model のfileを作成
 `php artisan make:model Todo`  
 
 app以下の`Todo.php`ファイル作成されたので編集  
-```
+```blade
 <?php
 
 namespace App;
@@ -430,7 +429,7 @@ class Todo extends Model
 }  
 ```
 `vi app/Http/Controllers/TodoController.php`  
-```
+```blade
 <?php
 
 namespace App\Http\Controllers;  
@@ -450,7 +449,7 @@ class TodoController extends Controller
     　// ここまで追記  
 ```
 **indexメソッド**を編集  
-```
+```blade
 // 省略  
 　public function index()  
     　{  
@@ -459,7 +458,7 @@ class TodoController extends Controller
 // 以下省略
 ```  
 **Createメソッド**を編集
-```
+```blade
 // 省略  
     　public function create()  
     　{  
@@ -468,7 +467,7 @@ class TodoController extends Controller
 // 以下省略  
 ```
 **Storeメソッド**を編集  
-```
+```blade
 // 省略  
   　  public function store(Request $request)  
   　  {  
@@ -480,7 +479,7 @@ class TodoController extends Controller
 // 以下省略  
 ```
 **Editメソッド**を編集  
-```
+```blade
 // 省略  
     　public function edit($id)  
     　{  
@@ -490,7 +489,7 @@ class TodoController extends Controller
 // 以下省略  
 ```
 **Updateメソッド**を編集  
-```
+```blade
 // 省略  
    　public function update(Request $request, $id)  
     　{  
@@ -501,7 +500,7 @@ class TodoController extends Controller
 // 以下省略  
 ```
 **Destroyメソッド**を編集  
-```
+```blade
 // 省略  
    　public function destroy($id)  
     　{  
@@ -513,10 +512,10 @@ class TodoController extends Controller
 ### laravel 〜ログイン機能の実装〜
 ___
 ```
-composer require laravel/ui:^1.0 --dev 【laravel/uiをインストール】  
-php artisan ui vue --auth 【artisanコマンドを実行】  
-npm install 【npmパッケージをインストール】  
-npm run dev　【インストールしたパッケージをビルドする】  
+composer require laravel/ui:^1.0 --dev  // laravel/uiをインストール  
+php artisan ui vue --auth  // artisanコマンドを実行  
+npm install  // npmパッケージをインストール  
+npm run dev  // インストールしたパッケージをビルドする  
 ```
 [Laravel 6.x 認証　Readouble](https://readouble.com/laravel/6.x/ja/authentication.html)  
 [Laravel 6.0 で「make:auth」が利用できなくなったので、対応方法記載します。](https://note.com/koushikagawa/n/n1b5bb4a69514)  
@@ -527,7 +526,7 @@ npm run dev　【インストールしたパッケージをビルドする】
 **既存のページに機能を反映** 
 
 `vi app/Http/controllers/TodoController.php`
-```
+```blade
 <?php  
 
 namespace App\Http\Controllers;  
@@ -544,8 +543,8 @@ namespace App\Http\Controllers;
 `php artisan make:migration add_user_id_to_todos_table --table=todos`
 
 作成したファイルを編集
-```
-?php  
+```blade
+<?php  
 
 use Illuminate\Support\Facades\Schema;  
 // 省略  
@@ -566,8 +565,8 @@ use Illuminate\Support\Facades\Schema;
 `php artisan migrate`　【マイグレーションを実行】  
 
 Modelに対して以下のように追記 (Todo.php)
-```
-\<?php  
+```blade
+<?php  
 //  省略  
 　    protected $fillable = [  
 　　        'content',  
@@ -582,15 +581,15 @@ Modelに対して以下のように追記 (Todo.php)
 }  
 ```
 保存と編集の処理を追加
-```
-\<?php
-\
+```blade
+<?php
+
 namespace App\Http\Controllers;
-\
+
 use Illuminate\Http\Request;  
 use App\Todo;  
 use Auth;  // 追記  
-\
+
 // 省略  
 　    public function index()  
 　    {  
@@ -614,7 +613,7 @@ ___
 **Nginxの設定ファイルを編集**
 
 `sudo vi /etc/nginx/conf.d/default.conf`
-```
+```blade
 server {  
 　　  listen       80;  
   server_name  192.168.33.10; # Vagranfileでコメントを外した箇所のipアドレスを記述してください。  
@@ -653,11 +652,11 @@ server {
 ```
 ;24行目近辺  
 user = apache  
-\ # ↓ 以下に編集  
+↓ 以下に編集  
 user = nginx  
-\
+
 group = apache  
-\ # ↓ 以下に編集  
+↓ 以下に編集  
 group = nginx
 ```
 **Permissionの設定**  
