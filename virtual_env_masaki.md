@@ -18,17 +18,17 @@ ___
 [VirtualBox公式](https://www.virtualbox.org/wiki/Download_Old_Builds_6_0)  
 
 以下のコマンドを実行してVirtualBoxのウィンドウが表示されるか確認 
-``` 
+``` shell
 $ virtualbox
 ```
 #### Vagrantのインストール
-```
+```shell
 $ brew cask install vagrant
 $ vagrant -v  // バージョン確認
 ```
 #### vagrant boxのダウンロード
 LinuxのCentOSのバージョン7のbox名 centos/7 を指定して実行  
-```
+```shell
 $ vagrant box add centos/7  
 → Enter your choice: 3  // 選択肢が表示されるので、virtualbox　を選択
 ```
@@ -38,7 +38,7 @@ Successfully added box 'centos/7' (v1902.01) for 'virtualbox'!
 ```
 #### Vagrantの作業ディレクトリを用意する
 自分の作業用ディレクトリ下にvagrant_test という名前でディレクトリを作成  
-```
+```shell
 $ mkdir vagrant_test  // ディレクトリ作成  
 $ cd vagrant_test  // 作成したディレクトリに移動  
 $ vagrant init centos/7  // vagrant boxを使用する  
@@ -51,7 +51,7 @@ the comments in the Vagrantfile as well as documentation on
 `vagrantup.com` for more information on using Vagrant.
 ```
 #### Vagrantfileの編集
-```
+```shell
 $ vi Vagrantfile
 ```
 ①、②、③の#を外してコメントイン、③はさらに編集
@@ -66,30 +66,37 @@ config.vm.synced_folder "../data", "/vagrant_data"
 config.vm.synced_folder "./", "/vagrant", type:"virtualbox" 
 ```
 #### Vagrant プラグインのインストール
-```
+```shell
 $ vagrant plugin install vagrant-vbguest  
 ```
  Saharaを導入する場合は下記のサイトを参照  
 [VagrantにSaharaを導入](https://qiita.com/sudachi808/items/09cbd3dd1f5c25c23eaf)
 
 #### Vagrantを使用してゲストOSの起動
-```
+```shell
 $ vagrant up
-
 ```
 エラーなど状況確認は`vagrant status`コマンド
 #### ゲストOSへのログイン
-```
+```shell
 $ vagrant ssh  // [vagrant@localhost ~]$の表示だと成功
 ```
+>vagrant sshコマンドは vagrant ssh-config コマンドを実行して表示される種々の情報をもとに ssh というコマンドを内部的に実行してログインしています。  
+\
+`vagrant ssh`ではなく `ssh` コマンドを使用してログインできます。  
+現在ゲストOSにログイン中の方は、exit コマンドでログアウトしてください。  
+下記のコマンドを `vagrant ssh-config`の実行結果として表示される情報に書き換えて実行  
+`$ ssh vagrant@127.0.0.1 -i /Users/xxxx/.vagrant/machines/default/virtualbox -p 2222`  
+[vagrant@localhost ~]$  // [vagrant@localhost ~]$の表示だと成功
+
 ### 仮想環境構築〜開発に必要なソフトウェアなどをインストール〜
 ___
 #### パッケージをインストール
-```
+```shell
 $ sudo yum -y groupinstall "development tools"
 ```
 #### PHPのインストール (PHP Ver7.3)
-```
+```shell
 $ sudo yum -y install epel-release wget
 $ sudo wget http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
 $ sudo rpm -Uvh remi-release-7.rpm
@@ -98,7 +105,7 @@ $ php -v
 ```
 [CentOSにPHP7.3をインストールする](https://www.suzu6.net/posts/152-centos7-php-73/)  
 #### composerのインストール
-```
+```shell
 $ php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
 $ php composer-setup.php
 $ php -r "unlink('composer-setup.php');"
@@ -109,7 +116,7 @@ $ composer -v
 ```
 #### Laravelのインストール (Laravel Ver6.０以上)
 現在ゲストOSにログインしている人は一旦`exit`コマンドを実行してログアウト  
-```
+```shell
 $ cd vagrant_test  // vagrant_testディレクトリ下にインストール  
 $ composer create-project laravel/laravel --prefer-dist laravel_app 6.0
 $ php artisan -v  // Laravel Ver6.2 で大丈夫
@@ -129,7 +136,7 @@ gpgcheck=0
 enabled=1  
 ```
 書き終えたら保存して、以下のコマンドを実行しNginxのインストールを実行 
-``` 
+``` shell
 $ sudo yum install -y nginx 
 $ nginx -v
 ```
@@ -140,7 +147,7 @@ $ sudo firewall-cmd --add-service=http --zone=public --permanent
 $ sudo firewall-cmd --reload  // 新たに追加を行ったのでそれをファイヤーウォールに反映させるコマンドも合わせて実行 
 ```
 #### Nginx起動
-```
+```shell
 $ sudo systemctl start nginx 
 ```
 【ブラウザ確認　http://192.168.33.19】  
@@ -161,7 +168,7 @@ SELINUX=enforcing
 SELINUX=disabled  
 ```
 設定を反映させるためにゲストOSを再起動する必要がある  
-```
+```shell
 $ exit 
 $ vagrant reload  
 $ vagrant ssh  // リロードが完了したら再度ゲストOSにログイン  
@@ -169,7 +176,7 @@ $ sudo systemctl start nginx
 ```
 【ブラウザ確認　http://192.168.33.19】
 #### データベースのインストール、起動 (Mysql Ver5.7)
-```
+```shell
 $ sudo wget http://dev.mysql.com/get/mysql57-community-release-el7-7.noarch.rpm  
 $ sudo rpm -Uvh mysql57-community-release-el7-7.noarch.rpm  
 $ sudo yum install -y mysql-community-server  
@@ -177,7 +184,7 @@ $ mysql --version  // versionの確認ができたら、インストール完了
 $ sudo systemctl start mysqld  // Mysql起動 
 ```
 MySQLの設定ファイルを変更 (シンプルなパスワードに初期設定できるように)
-```
+```shell
 $ sudo vi /etc/my.cnf
 ```
 下記の一行を追加
@@ -185,7 +192,7 @@ $ sudo vi /etc/my.cnf
 validate-password=OFF　
 ```
 passwordを調べ、接続しpassswordの再設定を行う
-```
+```shell
 $ sudo cat /var/log/mysqld.log | grep 'temporary password' 
 →　2017-01-01T00:00:00.000000Z 1 [Note] A temporary password is generated for root@localhost: パスワード  
 $ mysql -u root -p  
@@ -195,7 +202,7 @@ $ mysql > set password = "新たなpassword"; (パスワード設定)
 
 #### データベース、テーブルの作成
 データベースの作成
-```
+```shell
 $ mysql > create database laravel_app;  
 $ mysql > quit  
 ```
@@ -206,12 +213,12 @@ DB_USERNAME=root
 DB_PASSWORD=新しく作成したパスワード  
 ```
 テーブルの作成  
-```
+```shell
 $ cd laravel_app 
 $ php artisan migrate
 ``` 
 新しいマイグレーションファイルの作成
-```
+```shell
 $ php artisan make:migration create_todos_table --create=todos  
 ```
 database/migrations/に yyyy_mm_dd_xxxxxx_create_todos_table.phpファイルがあるので編集　
@@ -226,11 +233,11 @@ public function up()
   } 
 ```
 保存後、下記のコマンド実行
-```
+```shell
 $ php artisan migrate
 ```
 DBに初期データの投入
-```
+```shell
 $ php artisan make:seeder TodosTableSeeder  
 ```
 database/seeds/TodosTableSeeder を編集  
@@ -271,7 +278,7 @@ database/seeds/DatabaseSeeder.php を編集
     　}  
 ```
 DBに反映させる
-```
+```shell
 $ php artisan db:seed  
 
 → Seeding: TodosTableSeeder  // 表示されたら反映してる  
@@ -290,7 +297,7 @@ Route::get('/', function () {
 Route::resource('todo', 'TodoController');  // 追記  
 ```
 ##### Viewの作成
-```
+```shell
 $ mkdir resources/views/layouts resources/views/todo
 ``` 
 上記のコマンドで2つのディレクトリ作成
@@ -322,7 +329,7 @@ $ mkdir resources/views/layouts resources/views/todo
 </html>  
 ```
 #### Viewの分割
-`touch resources/views/todo/index.blade.php` ファイル作成後、編集 
+`$ touch resources/views/todo/index.blade.php` ファイル作成後、編集 
 ```blade
 @extends ('layouts.app')   
 @section ('content')   
@@ -362,9 +369,9 @@ $ mkdir resources/views/layouts resources/views/todo
 ```
 
 **Viewで使用するFormタグ変更する**  
-`composer require laravelcollective/html:6.2.0` 
+`$ composer require laravelcollective/html:6.2.0` 
 
-`vi config/app.php`  
+`$ vi config/app.php`  
 ```blade
 'providers' => [  
     　// ...  
@@ -378,7 +385,7 @@ $ mkdir resources/views/layouts resources/views/todo
     　// ...  
   ],  
 ```
-`touch resources/views/todo/create.blade.php resources/views/todo/edit.blade.php` 
+`$ touch resources/views/todo/create.blade.php resources/views/todo/edit.blade.php` 
 
 `create.blade.php` を編集
 ```blade
@@ -413,7 +420,7 @@ $ mkdir resources/views/layouts resources/views/todo
 #### Controllerを仕上げていく  
 DBへの操作が行えるように Model のfileを作成  
 
-`php artisan make:model Todo`  
+`$ php artisan make:model Todo`  
 
 app以下の`Todo.php`ファイル作成されたので編集  
 ```blade
@@ -428,7 +435,7 @@ class Todo extends Model
    　 protected $fillable = ['content']; // 追記  
 }  
 ```
-`vi app/Http/Controllers/TodoController.php`  
+`$ vi app/Http/Controllers/TodoController.php`  
 ```blade
 <?php
 
@@ -511,11 +518,11 @@ class TodoController extends Controller
 ```
 ### laravel 〜ログイン機能の実装〜
 ___
-```
-composer require laravel/ui:^1.0 --dev  // laravel/uiをインストール  
-php artisan ui vue --auth  // artisanコマンドを実行  
-npm install  // npmパッケージをインストール  
-npm run dev  // インストールしたパッケージをビルドする  
+```shell
+$ composer require laravel/ui:^1.0 --dev  // laravel/uiをインストール  
+$ php artisan ui vue --auth  // artisanコマンドを実行  
+$ npm install  // npmパッケージをインストール  
+$ npm run dev  // インストールしたパッケージをビルドする  
 ```
 [Laravel 6.x 認証　Readouble](https://readouble.com/laravel/6.x/ja/authentication.html)  
 [Laravel 6.0 で「make:auth」が利用できなくなったので、対応方法記載します。](https://note.com/koushikagawa/n/n1b5bb4a69514)  
@@ -525,7 +532,7 @@ npm run dev  // インストールしたパッケージをビルドする
 
 **既存のページに機能を反映** 
 
-`vi app/Http/controllers/TodoController.php`
+`$ vi app/Http/controllers/TodoController.php`
 ```blade
 <?php  
 
@@ -540,7 +547,7 @@ namespace App\Http\Controllers;
 ```
 **認証 〜ユーザーとデータの紐付け〜**  
 
-`php artisan make:migration add_user_id_to_todos_table --table=todos`
+`$ php artisan make:migration add_user_id_to_todos_table --table=todos`
 
 作成したファイルを編集
 ```blade
@@ -562,7 +569,7 @@ use Illuminate\Support\Facades\Schema;
 　    }  
 } 
 ```
-`php artisan migrate`　【マイグレーションを実行】  
+`$ php artisan migrate`　【マイグレーションを実行】  
 
 Modelに対して以下のように追記 (Todo.php)
 ```blade
@@ -612,11 +619,11 @@ use Auth;  // 追記
 ___
 **Nginxの設定ファイルを編集**
 
-`sudo vi /etc/nginx/conf.d/default.conf`
+`$ sudo vi /etc/nginx/conf.d/default.conf`
 ```blade
 server {  
 　　  listen       80;  
-  server_name  192.168.33.10; # Vagranfileでコメントを外した箇所のipアドレスを記述してください。  
+  server_name  192.168.33.19; # Vagranfileでコメントを外した箇所のipアドレスを記述してください。  
     
 　  root /vagrant/laravel_app/public; # 追記  
 　  index  index.html index.htm index.php; # 追記  
@@ -660,9 +667,9 @@ group = apache
 group = nginx
 ```
 **Permissionの設定**  
-```
-cd /vagrant/laravel_app 
-sudo chmod -R 777 storage  
+```shell
+$ cd /vagrant/laravel_app 
+$ sudo chmod -R 777 storage  
 ```
 【Permission】とエラーが出たら`ls -la` を実行して操作権限を確認  
 
@@ -670,9 +677,9 @@ sudo chmod -R 777 storage
 [Vagrantの共有ディレクトリでchmodしてもパーミッションが変更されない。](https://mrkmyki.com/vagrant%E3%81%AE%E5%85%B1%E6%9C%89%E3%83%87%E3%82%A3%E3%83%AC%E3%82%AF%E3%83%88%E3%83%AA%E3%81%A7chmod%E3%81%97%E3%81%A6%E3%82%82%E3%83%91%E3%83%BC%E3%83%9F%E3%83%83%E3%82%B7%E3%83%A7%E3%83%B3)
 
 #### 動作確認 (作成、更新、削除)
-```
-sudo systemctl restart nginx (再起動)   
-sudo systemctl start php-fpm  
+```shell
+$ sudo systemctl restart nginx (再起動)   
+$ sudo systemctl start php-fpm  
 ```
 【ブラウザ確認　http://192.168.33.19】  
 
